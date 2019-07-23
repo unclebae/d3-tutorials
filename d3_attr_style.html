@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta
+			name="viewport"
+			content="width=<device-width>, initial-scale=1.0"
+		/>
+		<meta http-equiv="X-UA-Compatible" content="ie=edge" />
+		<script src="https://d3js.org/d3.v5.min.js"></script>
+		<title>Document</title>
+	</head>
+	<body>
+		<h1>Circle</h1>
+		<h3>https://github.com/sgratzl/d3tutorial#d3</h3>
+		<h3>https://codepen.io/sgratzl/pen/POVKRj</h3>
+		<svg>
+			<circle></circle>
+		</svg>
+		<div></div>
+		<script>
+			let circle = d3.select("circle");
+			circle.attr("r", 10);
+			circle.attr("cx", 20);
+			circle.attr("cy", 23);
+			circle.attr("fill", "red");
+			circle.attr("stroke", "black");
+
+			circle.style("stroke-width", 2);
+			circle.classed("highlight", true);
+
+			d3.select("text").text("Hello");
+			d3.select("div").html(`<strong>Hello</strong>`);
+		</script>
+	</body>
+</html>

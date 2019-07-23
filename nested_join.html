@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<meta http-equiv="X-UA-Compatible" content="ie=edge" />
+		<script src="https://cdn.polyfill.io/v2/polyfill.min.js"></script>
+		<script src="https://d3js.org/d3.v5.min.js"></script>
+		<title>Document</title>
+	</head>
+	<body>
+		<svg width="500" height="500"></svg>
+		<script>
+			// 데이터를 생성한다.
+			// 데이터는 2개의 객체를 가진 배열이며, 각 객체는 name, arr 의 값을 가진다.
+			const data = [
+				{ name: "a", arr: [1, 2, 3] },
+				{
+					name: "b",
+					arr: [2, 3, 4, 5, 6, 7]
+				}
+			];
+
+			// d3를 이용하여 svg 엘리먼트를 하나 선택한다.
+			// 하위에 g 가 존재하는지 검사하고 있다면 모두 선택한다.
+			// 선택한 엘리먼트에 데이터를 세팅한다.
+			let groups = d3
+				.select("svg")
+				.selectAll("g")
+				.data(data);
+
+			// 그룹 하위 엘리먼트를 추가하기 위해서 append 를 설정한다. ("g")
+			let groups_enter = groups.enter().append("g");
+			// 그룹과 그룹 엔터 엘리먼터를 조인한다. 그리고 좌표계를 이동시킨다.
+			// 배열을 순회하면서 (d는 엘리먼트 i 는 인덱스이다. )
+			// 첫번재 값은 10칸 우측으로, 위에서 아래로 10칸 이동한다.
+			// 두번재 값은 1 * 20 + 10 칸 우측으로, 위에서 아래로 10칸 이동한다.
+			let groups_update = groups
+				.merge(groups_enter)
+				.attr("transform", (d, i) => `translate(${i * 20 + 10}, 10)`);
+
+			// 그룹에서 circle 엘리먼트를 전체 선택한다. (그리고 데이터를 세팅한다. 데이터는 각 객체에서 arr 의 내부 배열을 가진다.)
+			let circles = groups_update.selectAll("circle").data(d => d.arr);
+			// 서클크굽에서 circle 엘리먼트를 추가한다.
+			let circles_update = circles.enter().append("circle");
+
+			// 기존 서클 엘리먼트에 신규 추가된 서클을 머지한다.
+			circles
+				.merge(circles_update)
+				.attr("r", d => d * 2) // 서클 크기는 값 * 2로 반지금으로 한다.
+				.attr("cy", (d, i) => i * 20); // y 좌표는 인덱스 * 20 칸씩 아래로 내려간다.
+
+			// 서클 엘리먼트를 빠져나오면서 매핑되지 않은 엘리먼트는 제거한다.
+			circles.exit().remove();
+			// 그룹 엘리먼트를 빠져 나오면서 매핑되지 않은 엘리먼트는 제거한다.
+			groups.exit().remove();
+		</script>
+	</body>
+</html>

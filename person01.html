@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<meta http-equiv="X-UA-Compatible" content="ie=edge" />
+		<script src="https://cdn.polyfill.io/v2/polyfill.min.js"></script>
+		<script src="https://d3js.org/d3.v5.min.js"></script>
+		<title>Document</title>
+	</head>
+	<body>
+		<h1>D3 Persons: Weight vs Age</h1>
+		<h4>from: https://github.com/sgratzl/d3tutorial#d3</h4>
+
+		<script>
+			// margin 을 설정한다.
+			const margin = { top: 20, bottom: 40, left: 30, right: 20 };
+			// 넓이는 좌,우 마진을 제외한 값으로 설정한다.
+			const width = 800 - margin.left - margin.right;
+			// 높이는 상, 하 마진을 제외한 값으로 설정한다.
+			const height = 600 - margin.top - margin.bottom;
+
+			// d3에서 body 를 추출한다.
+			const svg = d3
+				.select("body")
+				.append("svg") // 그리고 svg 를 추가한다.
+				.attr("width", width + margin.left + margin.right) // svg 넓이는 넓이, 마진좌우를 합한값
+				.attr("height", height + margin.top + margin.bottom); // svg 높이는 높이, 마진상하를 합한값
+
+			// 그룹 엘러먼트를 추가한다.
+			const g = svg.append("g").attr(
+				// 엘리먼트 그룹을 이동시칸다. (마진좌, 마진 우 만큼 이동 시킨다. )
+				"transform",
+				`translate(${margin.left}, ${margin.right})`
+			);
+
+			// 화면에 출력한 데이터 객체 배열을 지정한다.
+			const data = [
+				{
+					name: "Steve",
+					age: 10,
+					weight: 30,
+					gender: "male"
+				},
+				{
+					name: "Stan",
+					age: 15,
+					weight: 60,
+					gender: "male"
+				},
+				{
+					name: "Tom",
+					age: 18,
+					weight: 70,
+					gender: "male"
+				},
+				{
+					name: "Marie",
+					age: 18,
+					weight: 58,
+					gender: "female"
+				}
+			];
+
+			// 스케일 오디널은 (이산 적 스케일을 지정할때 사용한다.)
+			// 스케일 도메인은 "female", "male" 2개로 지정
+			// 스케일 범위는 red, blue로 설정했다.
+			// 즉 이 값은 여성은 빨간색, 남성은 파란색으로 지정한다는 의미이다.
+			const color = d3
+				.scaleOrdinal()
+				.domain(["female", "male"])
+				.range(["red", "blue"]);
+
+			// x스케일지정
+			// scaleLinear 은 연속적인 스케일을 잡아준다.
+			const xscale = d3
+				.scaleLinear()
+				// 스케일 도메인값은 0 에서 나이중 최대값으로 잡는다.
+				.domain([0, d3.max(data, d => d.age) + 10])
+				// 스케일의 범위는 넓이 기준으로한다.
+				.range([0, width]);
+
+			// y스케일 작성
+			// scaleLinear 은 연속적인 값으로 스케일을 잡는다
+			const yscale = d3
+				.scaleLinear()
+				// 도메인은 0부터 몸무게 최대값까지
+				.domain([0, d3.max(data, d => d.weight) + 10])
+				// 범위는 높이부터 0까지 (이는 높이는 뒤집혀서 보여야하기 때문이다.)
+				.range([height, 0]);
+
+			// x축을 잡아준다. (x축은 아래 바텀에) 축의 범위는 xscale로 잡아준다.
+			const xaxis = d3.axisBottom().scale(xscale);
+			// y축을 잡아준다. (y축은 왼쪽에) 축의 범위는 yscale로 잡아준다.
+			const yaxis = d3.axisLeft().scale(yscale);
+
+			// 내부 그룹을 잡아준다.
+			g.append("g")
+				.classed("x.axis", true)
+				.attr("transform", `translate(0, ${height})`) // 이동을 한다. 0, 높이값으로 이동 (x축은 좌측으로는 0, 아래로 높이만큼이동한다. 그러면 바텀에 붙는다.)
+				.call(xaxis);
+			g.append("g")
+				.classed("y.axis", true)
+				.call(yaxis);
+
+			const group = g.append("g");
+
+			const marks = group.selectAll("circle").data(data);
+			const marks_enter = marks.enter().append("circle");
+			marks_enter.attr("r", 5).append("title");
+			const marks_update = marks
+				.merge(marks_enter)
+				.style("fill", d => color(d.gender))
+				.attr("cx", d => xscale(d.age))
+				.attr("cy", d => yscale(d.weight));
+
+			marks_update.select("title").text(d => d.name);
+			marks.exit().remove();
+		</script>
+	</body>
+</html>

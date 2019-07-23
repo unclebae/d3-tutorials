@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<meta http-equiv="X-UA-Compatible" content="ie=edge" />
+		<script src="https://d3js.org/d3.v5.min.js"></script>
+		<title>Document</title>
+	</head>
+	<body>
+		<svg></svg>
+		<script>
+			const cscale = d3
+				.scaleOrdinal(d3.schemeCategory10)
+				.domain(["a", "b", "c", "d"]);
+			const xscale = d3
+				.scaleBand()
+				.domain(["a", "b", "c", "d"])
+				.range([10, 200]);
+
+			function update(data) {
+				let s = d3.select("svg");
+				let circles = s.selectAll("circle").data(data, d => d);
+
+				let circles_enter = circles
+					.enter()
+					.append("circle")
+					.attr("r", 10)
+					.attr("cx", xscale)
+					.attr("fill", cscale);
+
+				circles
+					.merge(circles_enter)
+					.transition()
+					.duration(2000)
+					.attr("cy", (d, i) => 10 + i * 20);
+
+				circles.exit().remove();
+			}
+
+			let data = ["a", "b", "c"];
+			update(data);
+			setTimeout(() => {
+				data = ["c", "a", "d"];
+				update(data);
+			}, 2000);
+		</script>
+	</body>
+</html>
